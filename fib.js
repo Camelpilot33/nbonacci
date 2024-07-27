@@ -1,6 +1,3 @@
-function log(f) {
-    console.log(new Array(10).fill().map((a, b) => f(b)))
-}
 function timeTest(f, n) {
     let start = Date.now()
     f(n)
