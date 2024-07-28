@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "matrix.h"
 
 // time complexity O(2^n), space complexity O(n)
 int fib(int n) // This function uses recursion and the standard formula
@@ -26,17 +27,29 @@ int lin_fib(int n) // This function stores stores only the last two numbers of t
 }
 
 // time complexity O(log(n)), space complexity O(1)
-int log_fib(int n) // This function uses matrix exponentiation
+mpz_t *log_fib(int n) // This function uses matrix exponentiation
 {
-    int F[2][2] = {{1, 1}, {1, 0}};
     if (n == 0)
         return 0;
-    power(F, n - 1);
-    return F[0][0];
+    Matrix *m = create_matrix(2);
+    if (m == NULL) exit(1);
+    mpz_set_ui(m->matrix[0][0], 0);
+    mpz_set_ui(m->matrix[0][1], 1);
+    mpz_set_ui(m->matrix[1][0], 1);
+    mpz_set_ui(m->matrix[1][1], 1);
+    Matrix *result = power_matrix(m, n);
+    if (result == NULL) exit(1);
+    //set out to result->matrix[0][1];
+    mpz_t *out = malloc(sizeof(mpz_t));
+    mpz_init(*out);
+    mpz_set(*out, result->matrix[0][1]);
+    if (m!=result) free_matrix(result);
+    free_matrix(m);
+    return out;
 }
 
 int main()
 {
-    printf("%d, %d\n", fib(10), lin_fib(10));
+    gmp_printf("%d, %d, %Zd\n", fib(10), lin_fib(10), *log_fib(10));
     return 0;
 }

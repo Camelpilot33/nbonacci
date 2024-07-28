@@ -134,25 +134,22 @@ void free_matrix(Matrix *m)
     free(m);
 }
 
-int main()
-{
-    clock_t start = clock();
-    
-    Matrix *m = create_matrix(2);
-    if (m == NULL) return 1;
-    mpz_set_ui(m->matrix[0][0], 0);
-    mpz_set_ui(m->matrix[0][1], 1);
-    mpz_set_ui(m->matrix[1][0], 1);
-    mpz_set_ui(m->matrix[1][1], 1);
-    
-    int n = 40000000;
-    Matrix *result = power_matrix(m, n);
-    if (result == NULL) return 1;
-    printf("Number of digits: %d\n", mpz_sizeinbase(result->matrix[0][1], 10));
-    if (m!=result) free_matrix(result);
-    free_matrix(m);
-
-    printf("Time taken: %.2fs\n", (double)(clock() - start)/CLOCKS_PER_SEC);
-
-    return 0;
-}
+// // Test
+// int main()
+// {
+//     clock_t start = clock();   
+//     Matrix *m = create_matrix(2);
+//     if (m == NULL) return 1;
+//     mpz_set_ui(m->matrix[0][0], 0);
+//     mpz_set_ui(m->matrix[0][1], 1);
+//     mpz_set_ui(m->matrix[1][0], 1);
+//     mpz_set_ui(m->matrix[1][1], 1);   
+//     int n = 40000000;
+//     Matrix *result = power_matrix(m, n);
+//     if (result == NULL) return 1;
+//     printf("Number of digits: %d\n", mpz_sizeinbase(result->matrix[0][1], 10));
+//     if (m!=result) free_matrix(result);
+//     free_matrix(m);
+//     printf("Time taken: %.2fs\n", (double)(clock() - start)/CLOCKS_PER_SEC);
+//     return 0;
+// }
