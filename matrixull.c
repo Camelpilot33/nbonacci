@@ -1,6 +1,17 @@
-#include "matrix.h"
 #include <stdio.h>
-#include <time.h>
+#include <stdlib.h>
+
+typedef unsigned long long ull;
+typedef struct {
+    int size;
+    ull **matrix;
+} Matrix;
+
+Matrix *create_matrix(int size);
+Matrix *id_matrix(int size);
+Matrix *multiply_matrix(Matrix *a, Matrix *b);
+Matrix *power_matrix(Matrix *m, int n);
+void free_matrix(Matrix *m);
 
 Matrix *create_matrix(int size)
 {
@@ -16,17 +27,11 @@ Matrix *create_matrix(int size)
     {
         m->matrix[i] = (ull *)malloc(size * sizeof(ull));
         if (m->matrix[i] == NULL) {
-            for (int j = 0; j < i; j++) {
-                for (int k = 0; k < size; k++)
-                    mpz_clear(m->matrix[j][k]);
+            for (int j = 0; j < i; j++)
                 free(m->matrix[j]);
-            }
             free(m->matrix);
             free(m);
             return NULL;
-        }
-        for (int j = 0; j < size; j++) {
-            mpz_init(m->matrix[i][j]);
         }
     }
     return m;
@@ -40,10 +45,7 @@ Matrix *id_matrix(int size)
     {
         for (int j = 0; j < size; j++)
         {
-            if (i == j)
-                mpz_set_ui(m->matrix[i][j], 1);
-            else
-                mpz_set_ui(m->matrix[i][j], 0);
+            m->matrix[i][j] = (ull)(i == j);
         }
     }
     return m;
@@ -58,40 +60,31 @@ Matrix *multiply_matrix(Matrix *a, Matrix *b)
     {
         for (int j = 0; j < a->size; j++)
         {
-            mpz_set_ui(c->matrix[i][j], 0);
+            c->matrix[i][j] = 0;
             for (int k = 0; k < a->size; k++)
             {
-                ull temp;
-                mpz_init(temp);
-                mpz_mul(temp, a->matrix[i][k], b->matrix[k][j]);
-                mpz_add(c->matrix[i][j], c->matrix[i][j], temp);
-                mpz_clear(temp);
+                c->matrix[i][j] += a->matrix[i][k] * b->matrix[k][j];
             }
         }
     }
     return c;
 }
-
-Matrix *power_matrix(Matrix *m, unsigned long long int n)
+Matrix *power_matrix(Matrix *m, int n)
 {
     if (n == 0)
         return id_matrix(m->size);
     if (n == 1)
         return m;
-
     Matrix *result = id_matrix(m->size);
     Matrix *base = create_matrix(m->size);
-
     if (result == NULL || base == NULL) {
         free_matrix(result);
         free_matrix(base);
         return NULL;
     }
-
     for (int i = 0; i < m->size; i++)
         for (int j = 0; j < m->size; j++)
-            mpz_set(base->matrix[i][j], m->matrix[i][j]);
-
+            base->matrix[i][j] = m->matrix[i][j];
     while (n > 0)
     {
         if (n % 2 == 1)
@@ -123,11 +116,8 @@ Matrix *power_matrix(Matrix *m, unsigned long long int n)
 
 void free_matrix(Matrix *m)
 {
-    if (m == NULL) return;
     for (int i = 0; i < m->size; i++)
     {
-        for (int j = 0; j < m->size; j++)
-            mpz_clear(m->matrix[i][j]);
         free(m->matrix[i]);
     }
     free(m->matrix);
@@ -136,23 +126,17 @@ void free_matrix(Matrix *m)
 
 int main()
 {
-    clock_t start = clock();
-    
     Matrix *m = create_matrix(2);
     if (m == NULL) return 1;
-    mpz_set_ui(m->matrix[0][0], 0);
-    mpz_set_ui(m->matrix[0][1], 1);
-    mpz_set_ui(m->matrix[1][0], 1);
-    mpz_set_ui(m->matrix[1][1], 1);
-    
-    int n = 40000000;
-    Matrix *result = power_matrix(m, n);
-    if (result == NULL) return 1;
-    printf("Number of digits: %d\n", mpz_sizeinbase(result->matrix[0][1], 10));
-    if (m!=result) free_matrix(result);
+    m->matrix[0][0] = 0;
+    m->matrix[0][1] = 1;
+    m->matrix[1][0] = 1;
+    m->matrix[1][1] = 1;
+    int n=93;
+    Matrix *a = power_matrix(m, 93); //93 is largest handled by ull
+    if (a == NULL) return 1;
+    printf("fib(%d) = %llu\n", n, a->matrix[0][1]);
+    if (m!=a) free_matrix(a);
     free_matrix(m);
-
-    printf("Time taken: %.2fs\n", (double)(clock() - start)/CLOCKS_PER_SEC);
-
     return 0;
 }
