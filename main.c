@@ -88,6 +88,14 @@ void logarithmic(int n, int p, mpz_t res) // This function uses matrix exponenti
     }
 
     Matrix *result = power_matrix(m, n);
+    //print:
+    // for (int i=0;i<p;i++) {
+    //     for (int j=0;j<p;j++) {
+    //         gmp_printf("%Zd ", result->matrix[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+
     if (result == NULL)
         exit(1);
     mpz_set(res, result->matrix[0][1]);
@@ -138,22 +146,22 @@ void time_test(int n, int m, int f)
 
 int main()
 {
-    int m = 5;
-    // for (int i=0;i<10;i++) {
-    //     mpz_t res;
-    //     mpz_init(res);
-    //     logarithmic(i,m,res);
-    //     gmp_printf("f(%d) = %Zd\n", i, res);
-    // }
+    int m = 4;
+    for (int i=0;i<20;i++) {
+        mpz_t res;
+        mpz_init(res);
+        logarithmic(i,m,res);
+        gmp_printf("f(%d) = %Zd\n", i, res);
+    }
     //30
-    printf("\n30\n");
-    time_test(30, m, 0);
-    time_test(30, m, 1);
-    time_test(30, m, 2);
+    // printf("\n30\n");
+    // time_test(30, m, 0);
+    // time_test(30, m, 1);
+    // time_test(30, m, 2);
 
-    //3000
-    printf("\n2000\n");
-    time_test(3000, m, 1);
-    time_test(3000, m, 2);
+    // //3000
+    // printf("\n2000\n");
+    // time_test(3000, m, 1);
+    // time_test(3000, m, 2);
     return 0;
 }
